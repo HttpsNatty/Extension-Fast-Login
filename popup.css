@@ -1,0 +1,221 @@
+:root {
+    --bg-color: #ffe6f2;
+    --card-bg: #fff0f5;
+    --text-color: #800040;
+    --primary-btn: #ff66b2;
+    --primary-btn-hover: #ff3399;
+    --border-color: #ffccdd;
+    --icon-btn-bg: #ff66b2;
+    --icon-btn-hover: #ff3399;
+    --text-muted: #b36685;
+}
+
+body.theme-dark {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #f0f0f0;
+    --primary-btn: #d63384;
+    --primary-btn-hover: #c2185b;
+    --border-color: #444;
+    --icon-btn-bg: #d63384;
+    --icon-btn-hover: #c2185b;
+    --text-muted: #aaa;
+}
+
+body {
+    width: 380px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 15px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-color);
+    text-align: center;
+    flex-grow: 1;
+}
+
+/* List Items */
+.profile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.profile-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.profile-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.profile-name {
+    font-weight: bold;
+    font-size: 14px;
+    display: block;
+}
+
+.profile-email {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.icon-btn {
+    background: var(--icon-btn-bg);
+    border: none;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.1s;
+}
+
+.icon-btn:hover {
+    background: var(--icon-btn-hover);
+    transform: scale(1.05);
+}
+
+.icon-btn.launch {
+    background-color: #ff66b2;
+}
+
+/* Pink */
+.icon-btn.edit {
+    background-color: #ff85c2;
+}
+
+.icon-btn.copy {
+    background-color: #ff99cc;
+}
+
+.icon-btn.delete {
+    background-color: #ff4d4d;
+}
+
+/* Main Button */
+.main-action-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    background-color: var(--primary-btn);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.main-action-btn:hover {
+    background-color: var(--primary-btn-hover);
+}
+
+/* Editor */
+.editor-section {
+    margin-top: 20px;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.editor-section.hidden {
+    display: none;
+}
+
+.form-group {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+input,
+select {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+}
+
+body.theme-dark input,
+body.theme-dark select {
+    background: #444;
+    color: #fff;
+    border-color: #555;
+}
+
+.editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.primary-btn,
+.secondary-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+}
+
+.primary-btn {
+    background: var(--primary-btn);
+    color: white;
+}
+
+.secondary-btn {
+    background: #ccc;
+    color: #333;
+}
+
+.status-msg {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12px;
+    min-height: 16px;
+}

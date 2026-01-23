@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Project Auto Login & MFA",
+  "version": "1.0",
+  "description": "Automates login and MFA retrieval for Visitador and other projects.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Project Auto Login"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
