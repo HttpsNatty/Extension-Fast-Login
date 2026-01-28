@@ -1,4 +1,53 @@
+
+const translations = {
+    en: {
+        appTitle: "Fast Login",
+        noProfiles: "No profiles yet. Add a profile below!",
+        addProfile: "Add a profile",
+        manageProfile: "Manage Profile",
+        profileName: "Profile Name",
+        project: "Project",
+        loginUrl: "Login URL",
+        emailUrl: "Email URL",
+        loginEmail: "Login (Email)",
+        password: "Password:",
+        save: "Save",
+        cancel: "Cancel",
+        deleteConfirm: "Delete this profile?",
+        nameRequired: "Name is required",
+        profileSaved: "Profile saved!",
+        copied: "Copied to clipboard!",
+        launching: "Launching",
+        emailIndex: "Email Index"
+    },
+    pt: {
+        appTitle: "Login Rápido",
+        noProfiles: "Nenhum perfil encontrado. Adicione um abaixo!",
+        addProfile: "Adicionar perfil",
+        manageProfile: "Gerenciar Perfil",
+        profileName: "Nome do Perfil",
+        project: "Projeto",
+        loginUrl: "URL de Login",
+        emailUrl: "URL do Email",
+        loginEmail: "Login (Email)",
+        password: "Senha:",
+        save: "Salvar",
+        cancel: "Cancelar",
+        deleteConfirm: "Excluir este perfil?",
+        nameRequired: "Nome é obrigatório",
+        profileSaved: "Perfil salvo!",
+        copied: "Copiado para a área de transferência!",
+        launching: "Iniciando",
+        emailIndex: "Índice do Email"
+    }
+};
+
+let currentLang = 'pt';
+let currentAccent = 'pink';
+let currentMode = 'light';
+
 document.addEventListener('DOMContentLoaded', () => {
+
     // 1. Lógica de Senha (calculada)
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -13,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProfiles();
 
     // 3. Ouvintes de Eventos
+    document.getElementById('langToggle').addEventListener('click', toggleLanguage);
     document.getElementById('colorToggle').addEventListener('click', cycleColorTheme);
     document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
 
@@ -92,9 +142,8 @@ function createIconBtn(className, innerHTML) {
 // --- FUNÇÕES LÓGICAS ---
 
 function runProfile(profile) {
-    updateStatus(`Lançando ${profile.name}...`, 'blue');
+    updateStatus(`${translations[currentLang].launching} ${profile.name}...`, 'blue');
 
-    // Recalcular senha caso a data tenha mudado (caso extremo)
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -148,7 +197,7 @@ async function saveProfile() {
     const name = document.getElementById('profileName').value;
 
     if (!name) {
-        updateStatus('Nome é obrigatório', 'red');
+        updateStatus(translations[currentLang].nameRequired, 'red');
         return;
     }
 
@@ -158,26 +207,26 @@ async function saveProfile() {
         loginUrl: document.getElementById('loginUrl').value,
         emailUrl: document.getElementById('emailUrl').value,
         login: document.getElementById('loginInput').value,
-        emailIndex: document.getElementById('emailIndex').value
     };
 
     const data = await chrome.storage.local.get('profiles');
     let profiles = data.profiles || [];
 
     if (index >= 0) {
-        profiles[index] = profileData; // Update
+        profiles[index] = profileData;
     } else {
-        profiles.push(profileData); // Create
+        profiles.push(profileData);
     }
 
     await chrome.storage.local.set({ profiles });
-    loadProfiles();
+    // Re-renderizar lista para garantir que o texto traduzido seja aplicado se o idioma mudou
+    await loadProfiles();
     closeEditor();
-    updateStatus('Perfil salvo!', 'green');
+    updateStatus(translations[currentLang].profileSaved, 'green');
 }
 
 async function deleteProfile(index) {
-    if (confirm('Excluir este perfil?')) {
+    if (confirm(translations[currentLang].deleteConfirm)) {
         const data = await chrome.storage.local.get('profiles');
         let profiles = data.profiles || [];
         profiles.splice(index, 1);
