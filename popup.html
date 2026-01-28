@@ -92,8 +92,16 @@
 
 
 
+        <div class="form-group">
+            <label>Senha (Opcional)</label>
+            <input type="text" id="passwordInput" placeholder="Deixe vazio para usar a dinâmica">
+        </div>
+
         <div class="info-group">
-            Password: <span id="passwordDisplay"></span>
+            <span id="passwordLabel">Senha Dinâmica (Hoje):</span> <span id="passwordDisplay"></span>
+            <div class="field-hint" style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                (Se o campo acima estiver vazio, esta senha será usada)
+            </div>
         </div>
 
         <div class="editor-actions">

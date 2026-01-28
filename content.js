@@ -2,7 +2,21 @@ console.log('Script de Login Automático Ativo');
 
 // Ouvinte
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'perform_login') {
+    if (request.action === 'check_login_fields') {
+        const loginField =
+            document.querySelector('.mantine-TextInput-input') ||
+            document.querySelector('input[placeholder="Digite aqui"]:not([type="password"])') ||
+            document.querySelector('input[type="text"]:not([type="hidden"])');
+
+        const passwordField =
+            document.querySelector('input[type="password"]') ||
+            document.querySelector('.mantine-PasswordInput-innerInput');
+
+        const isPresent = !!(loginField && passwordField);
+        console.log('Verificação de campos de login:', isPresent);
+        sendResponse({ present: isPresent });
+
+    } else if (request.action === 'perform_login') {
         const { login, password } = request.data;
         console.log('Tentando login no Visitador...');
 

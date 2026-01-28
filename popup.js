@@ -144,20 +144,24 @@ function createIconBtn(className, innerHTML) {
 function runProfile(profile) {
     updateStatus(`${translations[currentLang].launching} ${profile.name}...`, 'blue');
 
+    // Recalcular senha caso a data tenha mudado (caso extremo)
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const year = today.getFullYear();
-    const password = `${year}${month}${day}-${day}`;
+    const dynamicPassword = `${year}${month}${day}-${day}`;
+
+    // Usar senha do perfil ou a dinâmica se estiver vazio
+    const finalPassword = profile.password ? profile.password : dynamicPassword;
 
     chrome.runtime.sendMessage({
         action: 'start_flow',
         data: {
             project: profile.project || 'visitador',
             loginUrl: profile.loginUrl || 'http://localhost:3000',
-            emailUrl: profile.emailUrl || 'https://mail.google.com',
+            emailUrl: profile.emailUrl || '', // Pode ser vazio
             login: profile.login,
-            password: password,
+            password: finalPassword,
             emailIndex: 1
         }
     });
@@ -179,10 +183,12 @@ function openEditor(profile = null, index = -1) {
         document.getElementById('loginUrl').value = profile.loginUrl || 'http://localhost:3000';
         document.getElementById('emailUrl').value = profile.emailUrl || 'https://mail.google.com';
         document.getElementById('loginInput').value = profile.login || '';
+        document.getElementById('passwordInput').value = profile.password || ''; // Popular senha
     } else {
         document.getElementById('editIndex').value = -1;
         document.getElementById('profileName').value = '';
         document.getElementById('loginInput').value = '';
+        document.getElementById('passwordInput').value = ''; // Limpar senha
     }
 }
 
@@ -207,6 +213,7 @@ async function saveProfile() {
         loginUrl: document.getElementById('loginUrl').value,
         emailUrl: document.getElementById('emailUrl').value,
         login: document.getElementById('loginInput').value,
+        password: document.getElementById('passwordInput').value // Novo campo de senha opcional
     };
 
     const data = await chrome.storage.local.get('profiles');
