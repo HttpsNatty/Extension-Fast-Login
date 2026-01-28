@@ -9,12 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const pwDisplay = document.getElementById('passwordDisplay');
     if (pwDisplay) pwDisplay.textContent = password;
 
-    // 2. Inicializar Estado
+    // 2. Estado Inicial
     loadProfiles();
-    loadTheme();
 
     // 3. Ouvintes de Eventos
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    document.getElementById('colorToggle').addEventListener('click', cycleColorTheme);
+    document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
+
     document.getElementById('addProfileBtn').addEventListener('click', () => openEditor());
     document.getElementById('cancelBtn').addEventListener('click', closeEditor);
     document.getElementById('saveBtn').addEventListener('click', saveProfile);
@@ -52,21 +53,18 @@ function renderList(profiles) {
         actions.className = 'profile-actions';
 
         // 1. Foguete (Lançar)
-        const btnLaunch = createIconBtn('launch', '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M2.925 5.567l14.78 14.78c.366.366.864.535 1.344.475a1.884 1.884 0 0 0 1.637-1.636c.06-.48. -109-978-4.75-14.78a2.535 2.535 0 0 0-3.586-3.586L2.45 15.651c-.366.366-.535.864-.475 1.344.155.908.97 1.572 1.888 1.637.48.06.978-.109 1.344-.475l-.946-.947L17.06 4.619l1.696 1.697L6.164 18.91l-.947-.946A2.533 2.533 0 0 0 2.925 5.567zm16.54 11.89-1.95-1.95 2.56-2.56a.75.75 0 0 1 1.06 1.06l-2.56 2.56 1.95 1.95a.75.75 0 0 1-1.06 1.06zm-6.07-5.01 1.06-1.06 2.89 2.89-1.06 1.06-2.89-2.89z"></path></svg>');
-        btnLaunch.innerHTML = '🚀'; // Icon SVG above is weird, using emoji or simplified SVG is safer for now.
-        // Let's use simple SVGs for reliability in this string builder
-        btnLaunch.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.1 2.1 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 5.42-2.25 7.39a9.7 9.7 0 0 1-3.95 2z"/><path d="M5 20h4v4"/></svg>';
+        const btnLaunch = createIconBtn('launch', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.1 2.1 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 5.42-2.25 7.39a9.7 9.7 0 0 1-3.95 2z"/><path d="M5 20h4v4"/></svg>');
         btnLaunch.onclick = () => runProfile(p);
 
         // 2. Editar
         const btnEdit = createIconBtn('edit', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>');
         btnEdit.onclick = () => openEditor(p, index);
 
-        // 3. Copiar (Placeholder)
+        // 3. Copiar
         const btnCopy = createIconBtn('copy', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>');
         btnCopy.onclick = () => {
             navigator.clipboard.writeText(`${p.login}`);
-            updateStatus('Copiado para a área de transferência!', 'green');
+            updateStatus(translations[currentLang].copied, 'green');
         };
 
         // 4. Excluir
@@ -190,20 +188,105 @@ async function deleteProfile(index) {
 
 // --- FUNÇÕES DE TEMA ---
 
-function loadTheme() {
-    const theme = localStorage.getItem('theme') || 'theme-pink';
-    document.body.className = theme;
+function loadSettings() {
+    // 1. Language
+    currentLang = localStorage.getItem('language') || 'pt';
+    applyLanguage(currentLang);
+
+    // 2. Tema (Modo + Destaque)
+    currentMode = localStorage.getItem('themeMode') || 'light';
+    currentAccent = localStorage.getItem('themeAccent') || 'pink';
+    applyTheme();
 }
 
-function toggleTheme() {
-    const current = document.body.className;
-    const newTheme = current === 'theme-pink' ? 'theme-dark' : 'theme-pink';
-    document.body.className = newTheme;
-    localStorage.setItem('theme', newTheme);
+function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'pt' : 'en';
+    localStorage.setItem('language', currentLang);
+    applyLanguage(currentLang);
+    loadProfiles(); // Atualizar lista para atualizar texto de estado vazio
+}
+
+function applyLanguage(lang) {
+    const t = translations[lang];
+    document.getElementById('appTitle').textContent = t.appTitle;
+    document.getElementById('addProfileBtn').textContent = t.addProfile;
+    document.querySelector('#editorSection h3').textContent = t.manageProfile;
+
+    // Labels
+    updateLabel('profileName', t.profileName);
+    updateLabel('projectSelect', t.project);
+    updateLabel('loginUrl', t.loginUrl);
+    updateLabel('emailUrl', t.emailUrl);
+    updateLabel('loginInput', t.loginEmail);
+    // updateLabel('emailIndex', t.emailIndex); // Campo removido
+
+    document.getElementById('saveBtn').textContent = t.save;
+    document.getElementById('cancelBtn').textContent = t.cancel;
+
+    const pwContainer = document.querySelector('.info-group');
+    if (pwContainer && pwContainer.firstChild) {
+        pwContainer.firstChild.textContent = t.password + ' ';
+    }
+}
+
+function updateLabel(inputId, text) {
+    const input = document.getElementById(inputId);
+    if (input && input.parentElement) {
+        const label = input.parentElement.querySelector('label');
+        if (label) label.textContent = text;
+    }
+}
+
+function cycleColorTheme() {
+    const accents = ['pink', 'blue', 'green'];
+    const currentIdx = accents.indexOf(currentAccent);
+    const nextIdx = (currentIdx + 1) % accents.length;
+    currentAccent = accents[nextIdx];
+
+    localStorage.setItem('themeAccent', currentAccent);
+    applyTheme();
+}
+
+function toggleDarkMode() {
+    currentMode = currentMode === 'light' ? 'dark' : 'light';
+    localStorage.setItem('themeMode', currentMode);
+    applyTheme();
+}
+
+function applyTheme() {
+    // Redefinir classes
+    document.body.className = '';
+
+    // Adicionar Modo
+    if (currentMode === 'dark') {
+        document.body.classList.add('theme-dark');
+    }
+
+    // Adicionar Destaque
+    // Apenas adicionar classe se NÃO for rosa (já que rosa é padrão nas variáveis CSS)
+    document.body.classList.add(`accent-${currentAccent}`);
+
+    // Atualizar Ícone do Modo Escuro (Lua vs Sol)
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        if (currentMode === 'dark') {
+            // Ícone do Sol
+            themeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+        } else {
+            // Ícone da Lua
+            themeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+        }
+    }
 }
 
 function updateStatus(msg, color) {
     const statusEl = document.getElementById('status');
-    statusEl.textContent = msg;
-    statusEl.style.color = color || 'black';
+    if (statusEl) {
+        statusEl.textContent = msg;
+        statusEl.style.color = color || 'black';
+        // Forçar visibilidade no modo escuro se necessário, mas o estilo lida com a cor
+        if (currentMode === 'dark' && (!color || color === 'black')) {
+            statusEl.style.color = '#ccc';
+        }
+    }
 }

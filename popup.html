@@ -9,14 +9,32 @@
 
 <body class="theme-pink">
     <div class="header">
-        <h2>Fast Login</h2>
-        <button id="themeToggle" class="icon-btn" title="Toggle Theme">
-            <!-- Moon Icon -->
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-        </button>
+        <h2 id="appTitle">Fast Login</h2>
+        <div class="header-controls">
+
+            <!-- Botão de Tema -->
+            <button id="colorToggle" class="icon-btn" title="Alternar Cor do Tema">
+                <!-- Icone de Paleta (Formato Rim) -->
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M12 21a9 9 0 1 1 0 -18a9 8 0 0 1 9 8a4.5 4 0 0 1 -4.5 4h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25">
+                    </path>
+                    <circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"></circle>
+                    <circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"></circle>
+                    <circle cx="16.5" cy="10.5" r="1" fill="currentColor" stroke="none"></circle>
+                </svg>
+            </button>
+
+            <!-- Botão de Modo Escuro -->
+            <button id="themeToggle" class="icon-btn" title="Toggle Dark Mode">
+                <!-- Ícone de Lua -->
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- Profile List Container -->

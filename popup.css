@@ -1,24 +1,64 @@
+/* --- VARIABLES --- */
 :root {
+    /* BACKGROUNDS */
     --bg-color: #ffe6f2;
     --card-bg: #fff0f5;
     --text-color: #800040;
+    --border-color: #ffccdd;
+    --text-muted: #b36685;
+
+    /* Rosa */
     --primary-btn: #ff66b2;
     --primary-btn-hover: #ff3399;
-    --border-color: #ffccdd;
     --icon-btn-bg: #ff66b2;
     --icon-btn-hover: #ff3399;
-    --text-muted: #b36685;
+
+    /* Delete Button */
+    --delete-btn: #ff4d4d;
 }
 
+/* --- TEMAS DE DESTAQUE --- */
+
+/* DESTAQUE AZUL */
+body.accent-blue {
+    --primary-btn: #2d89ef;
+    --primary-btn-hover: #1e5b9e;
+    --icon-btn-bg: #2d89ef;
+    --icon-btn-hover: #1e5b9e;
+    --text-color: #2b5797;
+}
+
+/* DESTAQUE VERDE */
+body.accent-green {
+    --primary-btn: #00a300;
+    --primary-btn-hover: #007300;
+    --icon-btn-bg: #00a300;
+    --icon-btn-hover: #007300;
+    --text-color: #1e7145;
+}
+
+/* --- FUNDOS ESPECÍFICOS DO MODO CLARO --- */
+
+body.accent-blue:not(.theme-dark) {
+    --bg-color: #eff4ff;
+    --card-bg: #ffffff;
+    --border-color: #dae2f2;
+    --text-muted: #6e7a91;
+}
+
+body.accent-green:not(.theme-dark) {
+    --bg-color: #f0f7f0;
+    --card-bg: #ffffff;
+    --border-color: #dbe4db;
+    --text-muted: #738b73;
+}
+
+/* --- Modo escuro--- */
 body.theme-dark {
     --bg-color: #1a1a1a;
     --card-bg: #2d2d2d;
     --text-color: #f0f0f0;
-    --primary-btn: #d63384;
-    --primary-btn-hover: #c2185b;
     --border-color: #444;
-    --icon-btn-bg: #d63384;
-    --icon-btn-hover: #c2185b;
     --text-muted: #aaa;
 }
 
@@ -39,6 +79,11 @@ body {
     margin-bottom: 20px;
 }
 
+.header-controls {
+    display: flex;
+    gap: 8px;
+}
+
 h2 {
     margin: 0;
     font-weight: 700;
@@ -47,7 +92,7 @@ h2 {
     flex-grow: 1;
 }
 
-/* List Items */
+/* Lista de perfis */
 .profile-list {
     display: flex;
     flex-direction: column;
@@ -112,16 +157,19 @@ h2 {
 }
 
 .icon-btn.launch {
-    background-color: #ff66b2;
+    background-color: var(--icon-btn-bg);
 }
 
-/* Pink */
+/* Rosa */
 .icon-btn.edit {
-    background-color: #ff85c2;
+    background-color: var(--text-muted);
+    background-color: var(--icon-btn-bg);
+    opacity: 0.8;
 }
 
 .icon-btn.copy {
-    background-color: #ff99cc;
+    background-color: var(--icon-btn-bg);
+    opacity: 0.6;
 }
 
 .icon-btn.delete {
