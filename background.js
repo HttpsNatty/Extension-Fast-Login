@@ -8,43 +8,43 @@ async function handleLoginFlow(data) {
     const { loginUrl, emailUrl, login, password, emailIndex } = data;
 
     try {
-        // 1. Open Login Page
+        // 1. Abrir página de login
         const loginTab = await createTab(loginUrl);
 
-        // Wait for load and inject
+        // Aguardar carregamento e injecção
         await waitForTabLoad(loginTab.id);
         await chrome.scripting.executeScript({
             target: { tabId: loginTab.id },
             files: ['content.js']
         });
 
-        // Send Login Data
+        // Enviar dados de login
         const loginResult = await sendMessageToTab(loginTab.id, {
             action: 'perform_login',
             data: { login, password }
         });
 
-        console.log('Login filled:', loginResult);
+        console.log('Login preenchido:', loginResult);
 
-        // 2. Wait 15s for MFA (as requested)
-        console.log('Waiting 5s for MFA screen...');
+        // 2. Aguardar 5s para tela de MFA
+        console.log('Aguardando 5s pela tela de MFA...');
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        // 3. Open Email Page
+        // 3. Abrir página de email
         const emailTab = await createTab(emailUrl);
         await waitForTabLoad(emailTab.id);
 
-        // Inject script again
+        // Injetar script novamente
         await chrome.scripting.executeScript({
             target: { tabId: emailTab.id },
             files: ['content.js']
         });
 
-        // Extract Code
+        // Extrair código
         let codeResult = null;
-        // Retry a few times
+        // Tentar várias vezes
         for (let i = 0; i < 5; i++) {
-            console.log(`Extraction attempt ${i + 1}...`);
+            console.log(`Tentativa de extração ${i + 1}...`);
             codeResult = await sendMessageToTab(emailTab.id, {
                 action: 'extract_mfa',
                 data: { index: emailIndex }
@@ -55,12 +55,12 @@ async function handleLoginFlow(data) {
         }
 
         if (codeResult && codeResult.code) {
-            console.log('Code found:', codeResult.code);
+            console.log('Código encontrado:', codeResult.code);
 
-            // 4. Switch back and paste
+            // 4. Atualizar para a guia de login
             await chrome.tabs.update(loginTab.id, { active: true });
 
-            // Re-inject simply to ensure context is alive
+            // Injetar script novamente
             await chrome.scripting.executeScript({
                 target: { tabId: loginTab.id },
                 files: ['content.js']
@@ -71,15 +71,15 @@ async function handleLoginFlow(data) {
                 data: { code: codeResult.code }
             });
         } else {
-            console.log('No code found.');
+            console.log('Nenhum código encontrado.');
         }
 
     } catch (err) {
-        console.error('Flow failed:', err);
+        console.error('Fluxo falhou:', err);
     }
 }
 
-// Helpers
+// Auxiliares
 function createTab(url) {
     return new Promise(resolve => {
         chrome.tabs.create({ url }, tab => resolve(tab));
@@ -101,7 +101,7 @@ function sendMessageToTab(tabId, message) {
     return new Promise(resolve => {
         chrome.tabs.sendMessage(tabId, message, response => {
             if (chrome.runtime.lastError) {
-                resolve(null); // Handle dropped connection
+                resolve(null);
             } else {
                 resolve(response);
             }
