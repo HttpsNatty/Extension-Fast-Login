@@ -111,7 +111,7 @@ function runProfile(profile) {
             emailUrl: profile.emailUrl || 'https://mail.google.com',
             login: profile.login,
             password: password,
-            emailIndex: profile.emailIndex || 1
+            emailIndex: 1
         }
     });
 }
@@ -132,12 +132,10 @@ function openEditor(profile = null, index = -1) {
         document.getElementById('loginUrl').value = profile.loginUrl || 'http://localhost:3000';
         document.getElementById('emailUrl').value = profile.emailUrl || 'https://mail.google.com';
         document.getElementById('loginInput').value = profile.login || '';
-        document.getElementById('emailIndex').value = profile.emailIndex || 1;
     } else {
         document.getElementById('editIndex').value = -1;
         document.getElementById('profileName').value = '';
         document.getElementById('loginInput').value = '';
-        // Keep URLs as defaults
     }
 }
 
