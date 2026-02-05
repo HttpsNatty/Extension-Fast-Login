@@ -159,7 +159,7 @@ function runProfile(profile) {
         data: {
             project: profile.project || 'visitador',
             loginUrl: profile.loginUrl || 'http://localhost:3000',
-            emailUrl: profile.emailUrl || '', // Pode ser vazio
+            emailUrl: profile.emailUrl || '',
             login: profile.login,
             password: finalPassword,
             emailIndex: 1
@@ -294,7 +294,7 @@ function updateLabel(inputId, text) {
 }
 
 function cycleColorTheme() {
-    const accents = ['pink', 'blue', 'green'];
+    const accents = ['pink', 'purple', 'blue', 'green'];
     const currentIdx = accents.indexOf(currentAccent);
     const nextIdx = (currentIdx + 1) % accents.length;
     currentAccent = accents[nextIdx];

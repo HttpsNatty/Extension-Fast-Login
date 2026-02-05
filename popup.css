@@ -19,6 +19,15 @@
 
 /* --- TEMAS DE DESTAQUE --- */
 
+/* DESTAQUE ROXO */
+body.accent-purple {
+    --primary-btn: #8B5CF6;
+    --primary-btn-hover: #7C3AED;
+    --icon-btn-bg: #8B5CF6;
+    --icon-btn-hover: #7C3AED;
+    --text-color: #6D28D9;
+}
+
 /* DESTAQUE AZUL */
 body.accent-blue {
     --primary-btn: #2d89ef;
@@ -38,6 +47,13 @@ body.accent-green {
 }
 
 /* --- FUNDOS ESPECÍFICOS DO MODO CLARO --- */
+
+body.accent-purple:not(.theme-dark) {
+    --bg-color: #F5F3FF;
+    --card-bg: #ffffff;
+    --border-color: #DDD6FE;
+    --text-muted: #8B5CF6;
+}
 
 body.accent-blue:not(.theme-dark) {
     --bg-color: #eff4ff;
