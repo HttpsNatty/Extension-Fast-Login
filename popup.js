@@ -46,9 +46,12 @@ let currentLang = 'pt';
 let currentAccent = 'pink';
 let currentMode = 'light';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
-    // 1. Lógica de Senha (calculada)
+    // 1. Carregar Estado Salvo
+    await loadSettings();
+
+    // 2. Lógica de Senha (calculada)
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -58,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pwDisplay = document.getElementById('passwordDisplay');
     if (pwDisplay) pwDisplay.textContent = password;
 
-    // 2. Estado Inicial
+    // 3. Estado Inicial Perfis
     loadProfiles();
 
     // 3. Ouvintes de Eventos
@@ -244,20 +247,22 @@ async function deleteProfile(index) {
 
 // --- FUNÇÕES DE TEMA ---
 
-function loadSettings() {
+async function loadSettings() {
+    const data = await chrome.storage.local.get(['language', 'themeMode', 'themeAccent']);
+
     // 1. Language
-    currentLang = localStorage.getItem('language') || 'pt';
+    currentLang = data.language || 'pt';
     applyLanguage(currentLang);
 
     // 2. Tema (Modo + Destaque)
-    currentMode = localStorage.getItem('themeMode') || 'light';
-    currentAccent = localStorage.getItem('themeAccent') || 'pink';
+    currentMode = data.themeMode || 'light';
+    currentAccent = data.themeAccent || 'pink';
     applyTheme();
 }
 
-function toggleLanguage() {
+async function toggleLanguage() {
     currentLang = currentLang === 'en' ? 'pt' : 'en';
-    localStorage.setItem('language', currentLang);
+    await chrome.storage.local.set({ language: currentLang });
     applyLanguage(currentLang);
     loadProfiles(); // Atualizar lista para atualizar texto de estado vazio
 }
@@ -293,19 +298,19 @@ function updateLabel(inputId, text) {
     }
 }
 
-function cycleColorTheme() {
+async function cycleColorTheme() {
     const accents = ['pink', 'purple', 'blue', 'green'];
     const currentIdx = accents.indexOf(currentAccent);
     const nextIdx = (currentIdx + 1) % accents.length;
     currentAccent = accents[nextIdx];
 
-    localStorage.setItem('themeAccent', currentAccent);
+    await chrome.storage.local.set({ themeAccent: currentAccent });
     applyTheme();
 }
 
-function toggleDarkMode() {
+async function toggleDarkMode() {
     currentMode = currentMode === 'light' ? 'dark' : 'light';
-    localStorage.setItem('themeMode', currentMode);
+    await chrome.storage.local.set({ themeMode: currentMode });
     applyTheme();
 }
 
