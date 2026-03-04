@@ -105,7 +105,7 @@ function renderList(profiles) {
         const actions = document.createElement('div');
         actions.className = 'profile-actions';
 
-        // 1. Foguete (Lançar)
+        // 1. Foguete
         const btnLaunch = createIconBtn('launch', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.1 2.1 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 5.42-2.25 7.39a9.7 9.7 0 0 1-3.95 2z"/><path d="M5 20h4v4"/></svg>');
         btnLaunch.onclick = () => runProfile(p);
 

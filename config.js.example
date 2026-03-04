@@ -1,0 +1,21 @@
+const CONFIG = {
+    // Credenciais
+    CLIENT_ID: "YOUR_CLIENT_ID_HERE",
+    CLIENT_SECRET: "YOUR_CLIENT_SECRET_HERE",
+    API_KEY: "YOUR_API_KEY_HERE",
+    USER: "YOUR_USER_HERE",
+    PASSWORD: "YOUR_PASSWORD_HERE",
+
+    // OAuth2 & Injeção de Headers
+    BASE_URL: "*://*/*", 
+    TOKEN_ENDPOINT: YOUR_REQUEST_HERE,
+    GRANT_TYPE: "client_credentials",
+    SCOPE: "your/scope",
+    CONTENT_TYPE: "application/x-www-form-urlencoded",
+    X_API_KEY_AGENT: "YOUR_API_KEY_HERE",
+    X_API_KEY_CONNECT: "YOUR_API_KEY_HERE",
+    X_API_KEY_DOCS: "YOUR_API_KEY_HERE",
+    X_API_KEY_FIN: "YOUR_API_KEY_HERE",
+    X_API_KEY_MAR: "YOUR_API_KEY_HERE",
+    TOKEN_HEADER_NAME: "auth-token"
+};
