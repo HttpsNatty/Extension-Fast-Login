@@ -119,13 +119,20 @@ h2 {
 
 .profile-card {
     background: var(--card-bg);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: 12px;
+    padding: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.profile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .profile-info {
@@ -246,9 +253,33 @@ select {
 
 body.theme-dark input,
 body.theme-dark select {
-    background: #444;
+    background: rgba(255, 255, 255, 0.05);
     color: #fff;
-    border-color: #555;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 35px;
+}
+
+.toggle-pw {
+    position: absolute;
+    right: 5px;
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    opacity: 0.6;
+}
+
+.toggle-pw:hover {
+    opacity: 1;
+    transform: none !important;
 }
 
 .editor-actions {

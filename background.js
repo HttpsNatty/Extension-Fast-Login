@@ -287,7 +287,7 @@ async function injectHeaders(token, project) {
         'mar': CONFIG.X_API_KEY_MAR,
         'connect': CONFIG.X_API_KEY_CONNECT,
         'docs': CONFIG.X_API_KEY_DOCS,
-        'visitador': CONFIG.X_API_KEY_AGENT
+        'agent': CONFIG.X_API_KEY_AGENT
     };
 
     const apiKey = keyMap[project] || CONFIG.X_API_KEY_AGENT;

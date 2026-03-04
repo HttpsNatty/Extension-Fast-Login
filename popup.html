@@ -37,6 +37,16 @@
                 </svg>
             </button>
 
+            <!-- Botão de Importar JSON -->
+            <button id="importBtn" class="icon-btn" title="Importar Perfil (JSON)">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+
             <!-- Botão de Modo Escuro -->
             <button id="themeToggle" class="icon-btn" title="Toggle Dark Mode">
                 <!-- Ícone de Lua -->
@@ -94,7 +104,16 @@
 
         <div class="form-group">
             <label>Senha (Opcional)</label>
-            <input type="text" id="passwordInput" placeholder="Deixe vazio para usar a dinâmica">
+            <div class="password-wrapper">
+                <input type="password" id="passwordInput" placeholder="Deixe vazio para usar a dinâmica">
+                <button id="togglePasswordVisibility" class="icon-btn toggle-pw" type="button">
+                    <svg id="eyeIcon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <div class="info-group">

@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     } else if (request.action === 'perform_login') {
         const { login, password } = request.data;
-        console.log('Tentando login no Visitador...');
+        console.log('Tentando login no Agent...');
 
         function waitForFields(retries = 20, interval = 500) {
             return new Promise((resolve) => {

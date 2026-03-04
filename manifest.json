@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Project Auto Login & MFA",
   "version": "1.0",
-  "description": "Automates login and MFA retrieval for Visitador and other projects.",
+  "description": "Automates login and MFA retrieval for Agent and other projects.",
   "icons": {
     "16": "icon_fast_login.png",
     "48": "icon_fast_login.png",
