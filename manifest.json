@@ -3,6 +3,11 @@
   "name": "Project Auto Login & MFA",
   "version": "1.0",
   "description": "Automates login and MFA retrieval for Visitador and other projects.",
+  "icons": {
+    "16": "icon_fast_login.png",
+    "48": "icon_fast_login.png",
+    "128": "icon_fast_login.png"
+  },
   "permissions": [
     "activeTab",
     "scripting",
