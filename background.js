@@ -1,5 +1,10 @@
 console.log('Background Service Worker carregado.');
-importScripts('config.js');
+try {
+    importScripts('config.js');
+} catch (error) {
+    console.warn('config.js não encontrado ou inválido. O login continuará sem headers dinâmicos.', error);
+    globalThis.CONFIG = null;
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('Mensagem recebida no background:', request);
@@ -12,75 +17,45 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 
 async function runFlow(data) {
-    const { project, loginUrl, emailUrl, login, password, emailIndex } = data;
-    console.log('Dados do fluxo:', { project, loginUrl, emailUrl, login, emailIndex });
+    const { project, loginUrl, emailUrl, login, password } = data;
+    console.log('Dados do fluxo:', { project, loginUrl, emailUrl, login });
+
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const effectivePassword = password || `${year}${month}${day}-${day}`;
 
     try {
         console.log('Iniciando fluxo principal...');
 
-        let mfaPageReached = false;
-        let attempts = 0;
-        const maxAttempts = 2;
+        // 1. Abrir a página de login imediatamente.
+        const loginTab = await createTab(loginUrl);
 
-        while (!mfaPageReached && attempts < maxAttempts) {
-            attempts++;
-            console.log(`Iniciando tentativa de login ${attempts}/${maxAttempts}...`);
-            console.log('Gerando token OAuth2...');
-            const token = await generateToken();
+        // // Aplicar headers enquanto a página carrega, quando houver configuração válida.
+        // if (typeof CONFIG !== 'undefined' && CONFIG) {
+        //     try {
+        //         console.log('Gerando token OAuth2...');
+        //         const token = await generateToken();
+        //         console.log(`Injetando cabeçalhos dinâmicos para projeto: ${project}...`);
+        //         await injectHeaders(token, project);
+        //     } catch (error) {
+        //         console.warn('Headers dinâmicos não foram aplicados. Continuando com o login.', error);
+        //     }
+        // } else {
+        //     console.warn('Login iniciado sem OAuth porque config.js não está configurado.');
+        // }
 
-            console.log(`Injetando cabeçalhos dinâmicos para projeto: ${project}...`);
-            await injectHeaders(token, project);
+        await waitForTabLoad(loginTab.id);
 
-            // 1. Abrir e Carregar Aba de Login
-            const loginTab = await createTab(loginUrl);
-            await waitForTabLoad(loginTab.id);
-
-            // 2. Verificar se precisa logar
-            const needsLogin = await checkLoginState(loginTab.id);
-
-            if (needsLogin) {
-                console.log('Campos de login detectados. Executando login...');
-                await executeLogin(loginTab.id, login, password);
-
-                if (emailUrl) {
-                    console.log('Aguardando até 10s pela mudança de URL para auth/mfa...');
-                    const reachedMfa = await waitForMfaPageWithTimeout(loginTab.id, 10000);
-
-                    if (reachedMfa) {
-                        console.log('Chegou na página de MFA. Continuando fluxo de email...');
-                        mfaPageReached = true;
-
-                        // Pula MFA se for projeto 'docs'
-                        if (project === 'docs') {
-                            console.log('Projeto DOCS detectado. Pulando MFA conforme solicitado.');
-                        } else {
-                            // O parâmetro true pula a espera inicial do executeMFA
-                            await executeMFA(loginTab.id, emailUrl, emailIndex, true);
-                        }
-                    } else {
-                        console.log('Timeout (10s): Não chegou em auth/mfa. Removendo regras, gerando novo token e tentando de novo...');
-                        await removeHeaders();
-                        try { await chrome.tabs.remove(loginTab.id); } catch (e) { }
-                        // Volta ao topo do loop while para reinicio completo
-                    }
-                } else {
-                    console.log('Sem URL de email. MFA pulado.');
-                    mfaPageReached = true;
-                }
-            } else {
-                console.log('Campos de login NÃO detectados. Verificando estado atual da página...');
-                const tab = await chrome.tabs.get(loginTab.id);
-                if (tab && tab.url && tab.url.includes('auth/mfa') && emailUrl) {
-                    mfaPageReached = true;
-                    await executeMFA(loginTab.id, emailUrl, emailIndex, true);
-                } else {
-                    console.log('Fluxo finalizado ou dashboard alcançado silenciosamente.');
-                    mfaPageReached = true;
-                }
-            }
+        const loginResult = await executeLogin(loginTab.id, login, effectivePassword, project);
+        if (!loginResult || loginResult.status !== 'success') {
+            throw new Error(loginResult?.message || 'Não foi possível preencher os campos de login.');
         }
-        if (!mfaPageReached && attempts >= maxAttempts) {
-            console.error(`Falha no fluxo: Limite de ${maxAttempts} tentativas atingido.`);
+
+        // 2. Buscar o código do email sem tirar o foco da aba de login.
+        if (emailUrl) {
+            await executeMFA(loginTab.id, emailUrl);
         }
     } catch (err) {
         console.error('Fluxo falhou:', err);
@@ -104,14 +79,75 @@ async function checkLoginState(tabId) {
     return false;
 }
 
-async function executeLogin(tabId, login, password) {
+async function executeLogin(tabId, login, password, project) {
     const loginResult = await sendMessageToTab(tabId, {
         action: 'perform_login',
-        data: { login, password }
+        data: { login, password, project }
     });
     console.log('Login preenchido:', loginResult);
+    return loginResult;
 }
 
+async function executeMFA(loginTabId, emailUrl) {
+    const emailTab = await createTab(emailUrl, false);
+    await waitForTabLoad(emailTab.id);
+
+    let messageOpened = false;
+    let code = null;
+
+    for (let attempt = 1; attempt <= 15 && !code; attempt++) {
+        const results = await chrome.scripting.executeScript({
+            target: { tabId: emailTab.id, allFrames: true },
+            func: (openMessage) => {
+                const bodyText = document.body?.innerText || '';
+                const codeMatch = bodyText.match(/(?:seu\s+)?c[oó]digo\s+de\s+verifica[cç][aã]o\s+(?:[ée]s|é|e)\s*:?\s*(\d{6})/i) ||
+                    bodyText.match(/(?:verification\s+code\s+is|verification\s+code:)\s*(\d{6})/i);
+
+                if (codeMatch) {
+                    return { code: codeMatch[1] };
+                }
+
+                if (openMessage) {
+                    const rows = Array.from(document.querySelectorAll('tr.zA'));
+                    const mfaRow = rows.find(row => /c[oó]digo de verifica[cç][aã]o|verification code|MFA/i.test(row.innerText));
+                    (mfaRow || rows[0])?.click();
+                }
+
+                return { code: null };
+            },
+            args: [!messageOpened]
+        });
+
+        messageOpened = true;
+        code = results.map(frame => frame.result?.code).find(Boolean) || null;
+
+        if (!code) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    }
+
+    if (!code) {
+        console.warn('Nenhum código de verificação foi encontrado no email.');
+        return;
+    }
+
+    console.log('Código de verificação encontrado:', code);
+    await chrome.tabs.update(loginTabId, { active: true });
+    const result = await sendMessageToTab(loginTabId, {
+        action: 'paste_mfa',
+        data: { code }
+    });
+    console.log('Código enviado para a página de login:', result);
+
+    if (result?.status === 'success') {
+        await chrome.tabs.remove(emailTab.id);
+        console.log('Aba de email fechada após o envio do código.');
+    }
+}
+
+/*
+ * Rotina de leitura e preenchimento do MFA temporariamente desativada.
+ * Ela será reimplementada depois que os exemplos reais do email forem definidos.
 async function executeMFA(loginTabId, emailUrl, emailIndex, skipWait = false) {
     // 1. Aguardar navegação para a tela de MFA
     if (!skipWait) {
@@ -251,6 +287,7 @@ async function executeMFA(loginTabId, emailUrl, emailIndex, skipWait = false) {
         }
     }
 }
+*/
 
 
 // Funções de OAuth e Headers

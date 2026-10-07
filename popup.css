@@ -258,6 +258,15 @@ body.theme-dark select {
     border-color: rgba(255, 255, 255, 0.1);
 }
 
+body.theme-dark select {
+    color-scheme: dark;
+}
+
+body.theme-dark select option {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
 .password-wrapper {
     position: relative;
     display: flex;
